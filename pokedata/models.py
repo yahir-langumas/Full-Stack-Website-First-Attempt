@@ -4,10 +4,10 @@ from django.db import models
 
 class Species(models.Model): 
     name = models.CharField(max_length=100)
-    id = models.IntegerField()
-    # height = models.IntegerField()
-    # weight = models.IntegerField()
-    # base_experience = models.IntegerField()
+    pokedex_id = models.IntegerField(unique=True)
+    height = models.IntegerField()
+    weight = models.IntegerField()
+    base_experience = models.IntegerField()
     types = models.JSONField()
     abilities = models.JSONField()
     stats = models.JSONField()
