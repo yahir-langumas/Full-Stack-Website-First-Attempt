@@ -11,7 +11,9 @@ class Species(models.Model):
     types = models.JSONField()
     abilities = models.JSONField()
     stats = models.JSONField()
+    total_stats = models.IntegerField()
     sprite = models.URLField()
+    
 class Todo(models.Model):
     title = models.CharField(max_length=100)
     completed = models.BooleanField(default=False)

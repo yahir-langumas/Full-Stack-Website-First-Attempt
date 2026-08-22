@@ -11,16 +11,21 @@ class Command(BaseCommand):
         while species_id <= max_species_id:
             poke_api_response = requests.get(f"https://pokeapi.co/api/v2/pokemon/{species_id}/")
             pokemon_data = poke_api_response.json()
+            pokemon_types = [type_info["type"]["name"] for type_info in pokemon_data["types"]]
+            pokemon_abilities = [ability_info["ability"]["name"] for ability_info in pokemon_data["abilities"]]
+            pokemon_stats = {stat_info["stat"]["name"]: stat_info["base_stat"] for stat_info in pokemon_data["stats"]}
+            pokemon_total_stats = sum(pokemon_stats.values())
             Species.objects.get_or_create(
                 pokedex_id = pokemon_data["id"], 
                 defaults= { 
                     "name" : pokemon_data["name"],
-                    "types" : pokemon_data["types"],
+                    "types" : pokemon_types,
                     "height" : pokemon_data["height"],
                     "weight" : pokemon_data["weight"],
                     "base_experience" : pokemon_data["base_experience"],
-                    "abilities" : pokemon_data["abilities"],
-                    "stats" : pokemon_data["stats"],
+                    "abilities" : pokemon_abilities,
+                    "stats" : pokemon_stats,
+                    "total_stats" : pokemon_total_stats,
                     "sprite" : pokemon_data["sprites"]["other"]["official-artwork"]["front_default"],
                 },
             )
