@@ -13,7 +13,6 @@ class Species(models.Model):
     stats = models.JSONField()
     total_stats = models.IntegerField()
     sprite = models.URLField()
+    def __str__(self):
+        return self.name
     
-class Todo(models.Model):
-    title = models.CharField(max_length=100)
-    completed = models.BooleanField(default=False)

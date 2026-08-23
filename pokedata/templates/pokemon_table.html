@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+  .dex-wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  .dex-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.75rem;
+  }
+
+  .dex-header h1 {
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: #222;
+    margin: 0;
+  }
+
+  .dex-count {
+    font-size: 0.9rem;
+    color: #888;
+    font-weight: 600;
+  }
+
+  .dex-search {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border: 2px solid #e5e5e5;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+
+  .dex-search:focus {
+    border-color: #6890F0;
+  }
+
+  .pokemon-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .pokemon-card {
+    background: #ffffff;
+    border: 1px solid #eee;
+    border-radius: 14px;
+    padding: 1.1rem 0.9rem 1.25rem;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .pokemon-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12);
+  }
+
+  .pokemon-card img {
+    width: 88px;
+    height: 88px;
+    object-fit: contain;
+    image-rendering: -webkit-optimize-contrast;
+  }
+
+  .dex-number {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #aaa;
+    letter-spacing: 0.03em;
+  }
+
+  .pokemon-name {
+    font-size: 1.02rem;
+    font-weight: 700;
+    color: #222;
+    text-transform: capitalize;
+    margin: 0.15rem 0 0.6rem;
+  }
+
+  .type-badges {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin-bottom: 0.65rem;
+  }
+
+  .type-badge {
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 0.22rem 0.6rem;
+    border-radius: 999px;
+  }
+
+  .bst-badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #555;
+    background: #f4f4f6;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+  }
+
+  .dex-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #888;
+    padding: 3rem 1rem;
+    font-size: 1rem;
+  }
+
+  .no-match {
+    display: none;
+  }
+
+  /* Official Pokemon type colors */
+  .type-normal   { background: #A8A878; }
+  .type-fire     { background: #F08030; }
+  .type-water    { background: #6890F0; }
+  .type-electric { background: #F8D030; color: #4a3f00; }
+  .type-grass    { background: #78C850; }
+  .type-ice      { background: #98D8D8; color: #14514f; }
+  .type-fighting { background: #C03028; }
+  .type-poison   { background: #A040A0; }
+  .type-ground   { background: #E0C068; color: #4a3a00; }
+  .type-flying   { background: #A890F0; }
+  .type-psychic  { background: #F85888; }
+  .type-bug      { background: #A8B820; }
+  .type-rock     { background: #B8A038; }
+  .type-ghost    { background: #705898; }
+  .type-dragon   { background: #7038F8; }
+  .type-dark     { background: #705848; }
+  .type-steel    { background: #B8B8D0; color: #3a3a48; }
+  .type-fairy    { background: #EE99AC; color: #5c1f2c; }
+</style>
+
+<div class="dex-wrap">
+  <div class="dex-header">
+    <h1>Pokémon Table</h1>
+    <span class="dex-count" id="dexCount"></span>
+  </div>
+
+  <input
+    type="text"
+    class="dex-search"
+    id="pokemonSearch"
+    placeholder="Search by name..."
+    oninput="filterPokemon()"
+  >
+
+  <div class="pokemon-grid" id="pokemonGrid">
+    {% for pokemon in species_list %}
+    <div class="pokemon-card" data-name="{{ pokemon.name }}">
+      <img
+        src="{{ pokemon.sprite }}"
+        alt="{{ pokemon.name }}"
+        loading="lazy"
+        onerror="this.style.visibility='hidden'"
+      >
+      <div class="dex-number">#{{ pokemon.pokedex_id }}</div>
+      <div class="pokemon-name">{{ pokemon.name }}</div>
+      <div class="type-badges">
+        {% for type in pokemon.types %}
+        <span class="type-badge type-{{ type }}">{{ type }}</span>
+        {% endfor %}
+      </div>
+      <div class="bst-badge">BST {{ pokemon.total_stats }}</div>
+    </div>
+    {% empty %}
+    <div class="dex-empty">No Pokémon found yet — make sure your view is passing a "species_list" of Species objects into this template.</div>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+  function filterPokemon() {
+    const search = document.getElementById('pokemonSearch').value.trim().toLowerCase();
+    const cards = document.querySelectorAll('.pokemon-card');
+    let visibleCount = 0;
+
+    cards.forEach(function (card) {
+      const name = card.getAttribute('data-name') || '';
+      const matches = name.includes(search);
+      card.classList.toggle('no-match', !matches);
+      if (matches) visibleCount++;
+    });
+
+    const countEl = document.getElementById('dexCount');
+    if (countEl) {
+      countEl.textContent = visibleCount + ' Pokémon';
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', filterPokemon);
+</script>
+{% endblock %}
