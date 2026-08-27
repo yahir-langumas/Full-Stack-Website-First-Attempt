@@ -15,6 +15,3 @@ def pokemon_table(request):
 def team_builder(request):
     species_list = Species.objects.all().order_by("pokedex_id")
     return render(request, "team_builder.html", {"species_list": species_list})
-
-
-# your existing todos view stays here, unchanged
