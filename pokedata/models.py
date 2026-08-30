@@ -15,4 +15,6 @@ class Species(models.Model):
     sprite = models.URLField()
     def __str__(self):
         return self.name
-    
+class Moves(models.Model): 
+    def __str__(self):
+        return self.name

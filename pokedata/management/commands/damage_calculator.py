@@ -10,3 +10,14 @@
 # Need a class for specific field effects like trick room, magic room, wonder room ...  ect (Not to necessary for DMG but nice to have)
 # Need a class for specific status effects like burn, paralysis, poison, sleep, freeze ...  ect
 # Need a class for specific stat changes like attack, defense, special attack, special defense, speed ... ect
+from pokedata.models import Species
+
+class DamageCalculator:
+    def __init__(self, attacker: Species, defender: Species, move_type: str, move_power: int): 
+        self.attacker = attacker
+        self.defender = defender
+        self.move_type = move_type
+        self.move_power = move_power
+
+    def sound_move(self): 
+        pass
