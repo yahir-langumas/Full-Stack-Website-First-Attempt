@@ -22,7 +22,7 @@ class Moves(models.Model):
     accuracy = models.IntegerField(null=True)
     effect_chance = models.IntegerField(null=True)
     pp = models.IntegerField()
-    meta = models.JSONField()
+    meta = models.JSONField(null = True)
     stat_changes = models.JSONField(null=True)
     # Meta refers to the metadata of the move, so attributes like move effect such as "has a 30% chance to paralyze the target"
     #  or "increases the user's speed by 1 stage" would be stored in this field.

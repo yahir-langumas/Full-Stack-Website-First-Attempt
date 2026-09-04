@@ -1,4 +1,4 @@
-
+# Import Api data into database 
 import requests 
 from django.core.management.base import BaseCommand
 from pokedata.models import Moves
@@ -12,12 +12,23 @@ class Command(BaseCommand):
             move_data = poke_api_response.json()
             damage_class = move_data["damage_class"]["name"]
             type = move_data["type"]["name"]
-            # Make field into a tuple using this: "ailment": move_data["meta"]["ailment"]
-            meta = move_data["meta"]["ailment"]["name"] if move_data["meta"]["ailment"] else None, 
-            move_data["meta"]["category"]["name"], 
-            move_data["meta"]["min_hits"], move_data["meta"]["max_hits"], move_data["meta"]["min_turns"], move_data["meta"]["max_turns"], 
-            move_data["meta"]["drain"], move_data["meta"]["healing"], move_data["meta"]["crit_rate"], move_data["meta"]["ailment_chance"], 
-            move_data["meta"]["flinch_chance"], move_data["meta"]["stat_chance"]
+            if move_data["meta"] is not None: 
+                meta = {
+                    "ailment": move_data["meta"]["ailment"]["name"] if move_data["meta"]["ailment"] else None,
+                    "category": move_data["meta"]["category"]["name"],
+                    "min_hits": move_data["meta"]["min_hits"],
+                    "max_hits": move_data["meta"]["max_hits"],
+                    "min_turns": move_data["meta"]["min_turns"],
+                    "max_turns": move_data["meta"]["max_turns"],
+                    "drain": move_data["meta"]["drain"],
+                    "healing": move_data["meta"]["healing"],
+                    "crit_rate": move_data["meta"]["crit_rate"],
+                    "ailment_chance": move_data["meta"]["ailment_chance"],
+                    "flinch_chance": move_data["meta"]["flinch_chance"],
+                    "stat_chance": move_data["meta"]["stat_chance"]
+                } 
+            else: 
+                meta = None
             Moves.objects.get_or_create(
                 move_id = move_data["id"], 
                 defaults = { 
@@ -29,7 +40,8 @@ class Command(BaseCommand):
                     "effect_chance": move_data["effect_chance"],
                     "damage_class" : damage_class, 
                     "type" : type, 
-                    "meta" : meta
+                    "meta" : meta, 
+                    "stat_changes" : move_data["stat_changes"]
                 }
             ) 
 

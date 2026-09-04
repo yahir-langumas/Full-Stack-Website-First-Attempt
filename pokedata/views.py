@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from .models import Species
+from .models import Moves 
 
 
 def home(request):
